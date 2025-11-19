@@ -27,7 +27,7 @@ jobs:
       shell: bash
       run: |
         VERSION="$(git describe --tags | cut -d '-' -f1 | cut -d 'v' -f2)"
-        LDFLAGS="-X github.com/wandera/helm-github/main.Version=${VERSION}"
+        LDFLAGS="-X github.com/jamf/helm-github/main.Version=${VERSION}"
         if [ "$GOOS" = "windows" ]; then
           go build -ldflags "${LDFLAGS}" -v -o dist/bin/helmgithub.exe
         else
