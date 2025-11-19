@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/google/go-github/v45/github"
-	"github.com/wandera/helm-github/helm"
+	"github.com/jamf/helm-github/helm"
 	"golang.org/x/oauth2"
 	"sigs.k8s.io/yaml"
 )

@@ -1,4 +1,4 @@
-module github.com/wandera/helm-github
+module github.com/jamf/helm-github
 
 go 1.24.1
 
