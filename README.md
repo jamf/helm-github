@@ -2,6 +2,35 @@
 
 This helm plugin allows to download helm charts from private GitHub repositories.
 
+## How to test locally
+
+You can test your changes locally by installing the locally built binary.
+
+1. Uninstall current version of the plugin.
+
+    ```bash
+    helm plugin remove github
+    ```
+
+2. Build your local version.
+
+    ```bash
+    make build
+    ```
+
+3. Install your local version.
+
+    ```bash
+    export HELM_GITHUB_PLUGIN_NO_INSTALL_HOOK=1
+    helm plugin install .
+    ```
+
+4. Check the plugin has been installed.
+
+    ```bash
+    helm plugin list
+    ```
+
 ## How to create new version
 
 1. Create a new branch from `master` branch with your changes.
