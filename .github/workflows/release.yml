@@ -15,9 +15,9 @@ jobs:
           goos: darwin
     steps:
     - name: Checkout the latest code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Install Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v6
       with:
         go-version-file: go.mod
     - name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
@@ -42,4 +42,3 @@ jobs:
         files: |
           *.tar.gz
           *.txt
-          
