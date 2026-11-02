@@ -248,7 +248,14 @@ func fetchArchive(ctx context.Context, uri string) (io.ReadCloser, error) {
 		return nil, err
 	}
 	for _, asset := range release.Assets {
-		if strings.HasSuffix(asset.GetBrowserDownloadURL(), uri) {
+		if assetMatches(asset.GetName(), uri) {
+			// DownloadReleaseAsset treats any redirect as the one to the storage
+			// URL and follows it without credentials. After a transfer or rename
+			// the old owner/repository redirects to /repositories/<id>, so use the
+			// canonical names GitHub reports for the asset.
+			if o, r := canonicalOwnerRepository(asset.GetBrowserDownloadURL()); o != "" {
+				owner, repository = o, r
+			}
 			rc, _, err := client.Repositories.DownloadReleaseAsset(ctx, owner, repository, asset.GetID(), http.DefaultClient)
 			if err != nil {
 				return nil, err
@@ -257,6 +264,29 @@ func fetchArchive(ctx context.Context, uri string) (io.ReadCloser, error) {
 		}
 	}
 	return nil, fmt.Errorf("asset '%s' not found", uri)
+}
+
+// assetMatches reports whether a release asset is the archive the index points
+// at. The release is already looked up by tag, so the file name identifies the
+// asset. The owner and repository in the URL are deliberately not compared: after
+// a repository transfer or rename the index.yaml keeps the old owner, while
+// GitHub reports browser_download_url under the new one.
+func assetMatches(assetName, uri string) bool {
+	return assetName != "" && assetName == path.Base(uri)
+}
+
+// canonicalOwnerRepository extracts owner and repository from an https
+// browser_download_url, or returns empty strings if it is not one.
+func canonicalOwnerRepository(downloadURL string) (string, string) {
+	parsed, err := url.Parse(downloadURL)
+	if err != nil || parsed.Host != githubHost {
+		return "", ""
+	}
+	seps := strings.Split(strings.TrimLeft(parsed.Path, "/"), "/")
+	if len(seps) < 2 || seps[0] == "" || seps[1] == "" {
+		return "", ""
+	}
+	return seps[0], seps[1]
 }
 
 func switchProtocolToGithub(file helm.IndexFile) helm.IndexFile {

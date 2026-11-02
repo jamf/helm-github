@@ -10,4 +10,5 @@ build:
 
 .PHONY: test
 test:
-	go test ./... -v
+	# main's init() requires a token; the unit tests never call the API.
+	GITHUB_TOKEN=unused go test ./... -v
