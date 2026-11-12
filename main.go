@@ -137,7 +137,7 @@ func getArchiveDigest(uri string) string {
 
 func getCachedIndexFile(uri string) (helm.IndexFile, bool) {
 	_, r := parseOwnerRepository(uri)
-	bytes, err := os.ReadFile(path.Join(cacheDirBase, r+"-index.yaml"))
+	bytes, err := os.ReadFile(path.Join(cacheDirBase, r+"-index.yaml")) //nolint:gosec // G703: r is a single path segment (split on "/"), so the name stays inside cacheDirBase
 	if err != nil {
 		return helm.IndexFile{}, false
 	}
@@ -225,15 +225,15 @@ func fetchIndexFile(ctx context.Context, uri string) (helm.IndexFile, error) {
 func openCacheFile(uri string) (*os.File, error) {
 	artifactName := parseArtifactName(uri)
 	chartPath := path.Join(chartsCacheDir, artifactName+".tgz")
-	_, err := os.Stat(chartPath)
+	_, err := os.Stat(chartPath) //nolint:gosec // G703: artifactName is the text after the last "/", so it cannot contain a separator
 	if err != nil {
-		create, err := os.Create(chartPath)
+		create, err := os.Create(chartPath) //nolint:gosec // G703: artifactName is the text after the last "/", so it cannot contain a separator
 		if err != nil {
 			return nil, err
 		}
 		return create, nil
 	}
-	open, err := os.OpenFile(chartPath, os.O_RDWR, 0o666)
+	open, err := os.OpenFile(chartPath, os.O_RDWR, 0o666) //nolint:gosec // G703: artifactName is the text after the last "/", so it cannot contain a separator
 	if err != nil {
 		return nil, err
 	}
